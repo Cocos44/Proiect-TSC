@@ -35,4 +35,106 @@ Un smartwatch bazat pe microcontrollerul Nordic nRF52840 cu display e-Paper.
 | D3 | USBLC6-2SC6Y | $0.24 | [JLC](https://jlcpcb.com/partdetail/STMicroelectronics-USBLC62SC6Y/C2969755) | [DS](https://jlcpcb.com/api/file/downloadByFileSystemAccessId/8603165824304111616) |
 | J4 | KH-TYPE-C-16P | $0.08 | [JLC](https://jlcpcb.com/partdetail/Shenzhen_KinghelmElec-KH_TYPE_C16P/C709357) | [DS](https://jlcpcb.com/api/file/downloadByFileSystemAccessId/8588905154556923904) |
 | U3 | MAX17048G-T10 | $2.44 | [JLC](https://jlcpcb.com/partdetail/2777647-MAX17048GT10/C2682616) | [DS](https://jlcpcb.com/api/file/downloadByFileSystemAccessId/8588907428524003328) |
-| J1 | 503480-2400 | $0.84 | [JLC](https://jlcpcb.com/partdetail/MOLEX-5034802400/C122434) | [DS](https://www.molex.com/content/dam/molex/molex-dot-com/products/automated/en-us/salesdrawingpdf/503/503480/5034802400_sd.pdf?inline)
+| J1 | 503480-2400 | $0.84 | [JLC](https://jlcpcb.com/partdetail/MOLEX-5034802400/C122434) | [DS](https://www.molex.com/content/dam/molex/molex-dot-com/products/automated/en-us/salesdrawingpdf/503/503480/5034802400_sd.pdf?inline) |
+
+---
+
+## Descriere Functionalitate Hardware
+
+### Microcontroller - nRF52840
+ Caracteristici principale:
+- ARM Cortex-M4 la 64 MHz
+- 1MB Flash, 256KB RAM
+- Bluetooth 5.0 / BLE integrat
+- Radio 2.4GHz cu suport pentru antena externa
+- Interfete multiple: SPI, I2C, UART, GPIO
+ 
+### Display E-Paper - Waveshare 1.54" V2
+ 
+Display-ul comunica prin SPI pe 4 fire:
+- Rezolutie: 200x200 pixeli
+- Consum ultra-redus - retine imaginea fara alimentare
+- Conectat la nRF52840 prin conectorul FPC 24 pini (503480-2400)
+ 
+### IMU - BMA423
+ 
+Accelerometrul BMA423 comunica prin I2C:
+- Accelerometru pe 3 axe
+- Numarare pasi, recunoastere activitate
+ 
+### Incarcator Baterie - BQ25180
+ 
+BQ25180 gestioneaza incarcarea bateriei prin I2C:
+- Intrare: USB-C 5V
+- Iesire: 3.7V LiPo
+- Curent maxim de incarcare: 250mA
+ 
+### Baterie - AKYGA LP502030
+ 
+- Dimensiuni: 32.5mm x 21mm x 5.5mm
+- Conectata direct la doua test pad-uri de pe placa
+ 
+### Motor Vibratii - FIT0774
+ 
+- Controlat prin GPIO via driver haptic DRV2605
+- Diametru: 10mm, Inaltime: 2.7mm
+- Tensiune de operare: 1.5-4.2V
+ 
+### Conector Debug - TC2030-IDC
+ 
+- Conector Tag-Connect 10 pini
+- Folosit pentru programare si debugging SWD
+- Semnale: SWDIO, SWDCLK, GND, VCC, RESET
+ 
+---
+ 
+## Pinii nRF52840
+ 
+| Pin nRF52840 | Semnal | Componenta | Interfata |
+|--------------|--------|-----------|-----------|
+| P0.00/XL1 | XL1 | Crystal X2 (32.768kHz) | XTAL |
+| P0.01/XL2 | XL2 | Crystal X2 (32.768kHz) | XTAL |
+| P0.05/AIN3 | EPD_CS | E-Paper (J1 FPC) | SPI CS |
+| P0.06 | SDA | BMA423, BQ25180, MAX17048, DRV2605 | I2C SDA |
+| P0.07 | SCL | BMA423, BQ25180, MAX17048, DRV2605 | I2C SCL |
+| P0.08 | IMU_INT1 | BMA423 | GPIO Input |
+| P1.08 | IMU_INT2 | BMA423 | GPIO Input |
+| P0.11 | PMIC_INT | BQ25180 | GPIO Input |
+| P0.12 | HAPTIC_EN | DRV2605 | GPIO |
+| VBUS | VBUS | USB-C (J4) | Power |
+| D- | D- | USB-C (J4) / USBLC6 | USB |
+| D+ | D+ | USB-C (J4) / USBLC6 | USB |
+| P0.13 | SW_UP | Buton Up | GPIO Input |
+| P0.14 | SW_ENT | Buton Enter | GPIO Input |
+| P0.15 | EPD_DC | E-Paper (J1 FPC) | SPI DC |
+| P0.16 | EPD_RST | E-Paper (J1 FPC) | GPIO |
+| P0.17 | EPD_BUSY | E-Paper (J1 FPC) | GPIO Input |
+| P0.18/RESET | RESET | TC2030-IDC | SWD/GPIO |
+| SWDCLK | SWDCLK | TC2030-IDC | SWD |
+| SWDIO | SWDIO | TC2030-IDC | SWD |
+| P1.02 | SW_DN | Buton Down | GPIO Input |
+| P0.10/NFC2 | ALERT | MAX17048 | GPIO Input |
+| ANT | RF | Antena 2450AT18B100E | RF |
+| P0.02/AIN0 | SCK | E-Paper (J1 FPC) | SPI SCK |
+| P0.03/AIN1 | MOSI | E-Paper (J1 FPC) | SPI MOSI |
+ 
+---
+
+## Jurnal de Design si Pasi de Implementare (Design Log)
+
+### Pasi realizare PCB
+* Plasarea componentelor majore: Am inceput prin a pozitiona componentele mari si cele cu constrangeri mecanice stricte (mufa USB, butoanele laterale, conectorul de display si microcontrollerul). Imediat dupa plasarea componentelor principale, am legat componentele mici (condensatoare, rezistente, etc.). In final, am pus Polygon Pour pe toate planurile infara de cel de POWER.
+
+* Dupa plasarea componentelor in PCB, am inceput rutarea mai intai cu traseele de putere, urmand dupa cu restul.
+
+* Rutarea (Top/Bottom): Traseele au fost rutate evitand unghiurile drepte. Liniile de alimentare au fost dimensionate cu latimea de 0.3mm (variind sub zonele dense BGA/QFN), iar cele de date la 0.15mm. Zona de sub antena radio a fost curatata complet de cupru si semnale.
+
+### Erori DRC acceptate
+* Copper Clearance: In zona pad-urilor BGA ale nRF52840, distanta minima dintre pad-uri este impusa de producator si nu poate fi modificata. Erorile sunt inevitabile si acceptate de JLCPCB.
+
+* Overlap: Aceste erori apar din cauza tehnicii Via-in-Pad. Via-urile plasate direct in pad-urile componentei se suprapun geometric cu traseele adiacente.
+
+* Drill Size: Via-urile folosite pentru Via-in-Pad au diametrul mai mic decat minimul din regulile DRC standard, ales intentionat pentru a incapea in pad-urile mici ale nRF52840.
+
+* Board Outline Clearance. Erori de la mufa USB-C.
+---
